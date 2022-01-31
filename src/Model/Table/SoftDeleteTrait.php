@@ -14,7 +14,7 @@ trait SoftDeleteTrait {
      * @return string
      * @throws \SoftDelete\Error\MissingFieldException
      */
-    public function getSoftDeleteField()
+    public function getSoftDeleteField(): string
     {
         if (isset($this->softDeleteField)) {
             $field = $this->softDeleteField;
@@ -34,7 +34,7 @@ trait SoftDeleteTrait {
         return $field;
     }
 
-    public function query()
+    public function query(): Query
     {
         return new Query($this->getConnection(), $this);
     }
@@ -51,7 +51,7 @@ trait SoftDeleteTrait {
      * passed entity
      * @return bool success
      */
-    protected function _processDelete($entity, $options)
+    protected function _processDelete($entity, $options): bool
     {
         if ($entity->isNew()) {
             return false;
@@ -105,7 +105,7 @@ trait SoftDeleteTrait {
      * Soft deletes all records matching `$conditions`.
      * @return int number of affected rows.
      */
-    public function deleteAll($conditions)
+    public function deleteAll($conditions): int
     {
         $query = $this->query()
             ->update()
@@ -120,7 +120,7 @@ trait SoftDeleteTrait {
      * Hard deletes the given $entity.
      * @return bool true in case of success, false otherwise.
      */
-    public function hardDelete(EntityInterface $entity)
+    public function hardDelete(EntityInterface $entity): bool
     {
         if(!$this->delete($entity)) {
             return false;
@@ -145,7 +145,7 @@ trait SoftDeleteTrait {
      * @param \DateTime $until Date until which soft deleted records must be hard deleted.
      * @return int number of affected rows.
      */
-    public function hardDeleteAll(\Datetime $until)
+    public function hardDeleteAll(\Datetime $until): int
     {
         $query = $this->query()
             ->delete()
@@ -163,7 +163,7 @@ trait SoftDeleteTrait {
      * @param EntityInterface $entity Entity to be restored.
      * @return bool true in case of success, false otherwise.
      */
-    public function restore(EntityInterface $entity)
+    public function restore(EntityInterface $entity): bool
     {
         $softDeleteField = $this->getSoftDeleteField();
         $entity->$softDeleteField = null;
