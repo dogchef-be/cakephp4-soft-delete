@@ -26,7 +26,7 @@ trait SoftDeleteTrait {
             throw new MissingColumnException(
                 __('Configured field `{0}` is missing from the table `{1}`.',
                     $field,
-                    $this->alias()
+                    $this->getAlias()
                 )
             );
         }
@@ -66,14 +66,17 @@ trait SoftDeleteTrait {
         if ($options['checkRules'] && !$this->checkRules($entity, RulesChecker::DELETE, $options)) {
             return false;
         }
-
-        $event = $this->dispatchEvent('Model.beforeDelete', [
-            'entity' => $entity,
-            'options' => $options
-        ]);
+        /** @var \Cake\Event\Event $event */
+        $event = $this->dispatchEvent(
+            'Model.beforeDelete',
+            [
+                'entity' => $entity,
+                'options' => $options
+            ]
+        );
 
         if ($event->isStopped()) {
-            return $event->result;
+            return $event->getResult();
         }
 
         $this->_associations->cascadeDelete(
@@ -93,10 +96,13 @@ trait SoftDeleteTrait {
             return $success;
         }
 
-        $this->dispatchEvent('Model.afterDelete', [
-            'entity' => $entity,
-            'options' => $options
-        ]);
+        $this->dispatchEvent(
+            'Model.afterDelete',
+            [
+                'entity' => $entity,
+                'options' => $options
+            ]
+        );
 
         return $success;
     }
@@ -163,7 +169,7 @@ trait SoftDeleteTrait {
      * @param EntityInterface $entity Entity to be restored.
      * @return bool true in case of success, false otherwise.
      */
-    public function restore(EntityInterface $entity): bool
+    public function restore(EntityInterface $entity)
     {
         $softDeleteField = $this->getSoftDeleteField();
         $entity->$softDeleteField = null;

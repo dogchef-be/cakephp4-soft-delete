@@ -11,7 +11,7 @@ class PostsTable extends Table
 {
     use SoftDeleteTrait;
 
-    public function initialize(array $config)
+    public function initialize(array $config): void
     {
         $this->belongsTo('Users');
         $this->belongsToMany('Tags');

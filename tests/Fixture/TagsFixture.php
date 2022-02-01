@@ -13,7 +13,7 @@ class TagsTable extends Table
 
     protected $softDeleteField = 'deleted_date';
 
-    public function initialize(array $config)
+    public function initialize(array $config): void
     {
         $this->belongsToMany('Posts', [
             'through' => 'PostsTags',

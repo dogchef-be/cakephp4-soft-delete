@@ -1,9 +1,11 @@
 <?php
 namespace SoftDelete\Test\TestCase\Model\Table;
 
-use Cake\TestSuite\TestCase;
+use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
-
+use Cake\TestSuite\TestCase;
+use SoftDelete\Error\MissingColumnException;
+use Cake\Database\Expression\QueryExpression;
 /**
  * App\Model\Behavior\SoftDeleteBehavior Test Case
  */
@@ -20,10 +22,10 @@ class SoftDeleteBehaviorTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'plugin.SoftDelete.users',
-        'plugin.SoftDelete.posts',
-        'plugin.SoftDelete.tags',
-        'plugin.SoftDelete.posts_tags'
+        'plugin.SoftDelete.Users',
+        'plugin.SoftDelete.Posts',
+        'plugin.SoftDelete.Tags',
+        'plugin.SoftDelete.PostsTags'
     ];
 
     /**
@@ -31,14 +33,14 @@ class SoftDeleteBehaviorTest extends TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
-        $this->usersTable = TableRegistry::get('Users', ['className' => 'SoftDelete\Test\Fixture\UsersTable']);
-        $this->postsTable = TableRegistry::get('Posts', ['className' => 'SoftDelete\Test\Fixture\PostsTable']);
-        $this->tagsTable = TableRegistry::get('Tags', ['className' => 'SoftDelete\Test\Fixture\TagsTable']);
-        $this->postsTagsTable = TableRegistry::get('PostsTags', ['className' => 'SoftDelete\Test\Fixture\PostsTagsTable']);
+        $this->usersTable = TableRegistry::getTableLocator()->get('Users', ['className' => 'SoftDelete\Test\Fixture\UsersTable']);
+        $this->postsTable = TableRegistry::getTableLocator()->get('Posts', ['className' => 'SoftDelete\Test\Fixture\PostsTable']);
+        $this->tagsTable = TableRegistry::getTableLocator()->get('Tags', ['className' => 'SoftDelete\Test\Fixture\TagsTable']);
+        $this->postsTagsTable = TableRegistry::getTableLocator()->get('PostsTags', ['className' => 'SoftDelete\Test\Fixture\PostsTagsTable']);
     }
 
     /**
@@ -46,7 +48,7 @@ class SoftDeleteBehaviorTest extends TestCase
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         unset($this->usersTable);
         unset($this->postsTable);
@@ -86,7 +88,10 @@ class SoftDeleteBehaviorTest extends TestCase
         $user = $this->usersTable->get(2);
         $this->usersTable->delete($user);
 
-        $query = $this->usersTable->find()->where(['id' => 1])->orWhere(['id' => 2]);
+        $query = $this->usersTable->find()->where(function (QueryExpression $exp, Query $q) {
+            return $exp->in('id', [1, 2]);
+        });
+
         $this->assertEquals(1, $query->count());
     }
 
@@ -283,11 +288,11 @@ class SoftDeleteBehaviorTest extends TestCase
 
     /**
      * When a configured field is missing from the table, an exception should be thrown
-     *
-     * @expectedException \SoftDelete\Error\MissingColumnException
      */
     public function testMissingColumn()
     {
+        $this->expectException(MissingColumnException::class);
+
         $this->postsTable->softDeleteField = 'foo';
         $post = $this->postsTable->get(1);
         $this->postsTable->delete($post);

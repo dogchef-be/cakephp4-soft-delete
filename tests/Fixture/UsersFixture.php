@@ -11,7 +11,7 @@ class UsersTable extends Table
 {
     use SoftDeleteTrait;
 
-    public function initialize(array $config)
+    public function initialize(array $config): void
     {
         $this->hasMany('Posts', [
             'dependent'        => true,
