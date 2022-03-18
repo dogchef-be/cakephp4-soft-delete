@@ -6,8 +6,8 @@ use Cake\ORM\Query as CakeQuery;
 class Query extends CakeQuery
 {
     /**
-     * Cake\ORM\Query::triggerBeforeFind overwritten to add the condition `deleted IS NULL` to 
-     * every find request in order not to return soft deleted records.
+     * Cake\ORM\Query::triggerBeforeFind overwritten to add the condition `deleted IS NULL` to
+     * every find request to prevent returning soft deleted records.
      *
      * If the query contains the option `withDeleted` the condition `deleted IS NULL` is not applied.
      *
