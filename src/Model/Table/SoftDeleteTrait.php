@@ -4,7 +4,9 @@ namespace SoftDelete\Model\Table;
 use Cake\ORM\RulesChecker;
 use Cake\Datasource\EntityInterface;
 use SoftDelete\Error\MissingColumnException;
-use SoftDelete\ORM\Query;
+use SoftDelete\ORM\SelectQuery;
+use Cake\ORM\Query\DeleteQuery;
+use Cake\ORM\Query\UpdateQuery;
 
 trait SoftDeleteTrait
 {
@@ -36,9 +38,19 @@ trait SoftDeleteTrait
         return $field;
     }
 
-    public function query(): Query
+    public function selectQuery(): SelectQuery
     {
-        return new Query($this->getConnection(), $this);
+        return new SelectQuery($this->getConnection(), $this);
+    }
+
+    public function updateQuery(): UpdateQuery
+    {
+        return new UpdateQuery($this->getConnection(), $this);
+    }
+
+    public function deleteQuery(): DeleteQuery
+    {
+        return new DeleteQuery($this->getConnection(), $this);
     }
 
     /**
@@ -86,7 +98,7 @@ trait SoftDeleteTrait
             ['_primary' => false] + $options->getArrayCopy()
         );
 
-        $query = $this->query();
+        $query = $this->selectQuery();
         $conditions = (array)$entity->extract($primaryKey);
         $statement = $query->update()
             ->set([$this->getSoftDeleteField() => date('Y-m-d H:i:s')])
@@ -115,7 +127,7 @@ trait SoftDeleteTrait
      */
     public function deleteAll($conditions): int
     {
-        $query = $this->query()
+        $query = $this->updateQuery()
             ->update()
             ->set([$this->getSoftDeleteField() => date('Y-m-d H:i:s')])
             ->where($conditions);
@@ -134,7 +146,7 @@ trait SoftDeleteTrait
             return false;
         }
         $primaryKey = (array)$this->getPrimaryKey();
-        $query = $this->query();
+        $query = $this->deleteQuery();
         $conditions = (array)$entity->extract($primaryKey);
         $statement = $query->delete()
             ->where($conditions)
@@ -155,7 +167,7 @@ trait SoftDeleteTrait
      */
     public function hardDeleteAll(\Datetime $until): int
     {
-        $query = $this->query()
+        $query = $this->deleteQuery()
             ->delete()
             ->where([
                 $this->getSoftDeleteField() . ' IS NOT NULL',

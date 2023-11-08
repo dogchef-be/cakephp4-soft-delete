@@ -1,9 +1,10 @@
 <?php
+
 namespace SoftDelete\ORM;
 
-use Cake\ORM\Query as CakeQuery;
+use Cake\ORM\Query\SelectQuery as SelectCakeQuery;
 
-class Query extends CakeQuery
+class SelectQuery extends SelectCakeQuery
 {
     /**
      * Cake\ORM\Query::triggerBeforeFind overwritten to add the condition `deleted IS NULL` to
@@ -15,12 +16,12 @@ class Query extends CakeQuery
      */
     public function triggerBeforeFind(): void
     {
-        if (!$this->_beforeFindFired && $this->_type === 'select') {
+        if (! $this->_beforeFindFired && $this->_type === 'select') {
             parent::triggerBeforeFind();
-            
+
             $options = $this->getOptions();
 
-            if (!is_array($options) || !in_array('withDeleted', $options, true)) {
+            if (! is_array($options) || ! in_array('withDeleted', $options, true)) {
                 $repository = $this->getRepository();
                 $aliasedField = $repository->aliasField($repository->getSoftDeleteField());
 
