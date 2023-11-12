@@ -225,8 +225,8 @@ class SoftDeleteBehaviorTest extends TestCase
      */
     public function testFindingWithCustomField()
     {
-        //$query = $this->tagsTable->find();
-        //$this->assertEquals(2, $query->count());
+        $query = $this->tagsTable->find();
+        $this->assertEquals(2, $query->count());
 
         $query = $this->tagsTable->find('all', ['withDeleted' => true]);
 
