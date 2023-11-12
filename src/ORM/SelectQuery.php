@@ -21,7 +21,7 @@ class SelectQuery extends SelectCakeQuery
 
             $options = $this->getOptions();
 
-            if (! is_array($options) || ! in_array('withDeleted', $options, true)) {
+            if (! is_array($options) || (! in_array('withDeleted', $options, true) && ! array_key_exists('withDeleted', $options))) {
                 $repository = $this->getRepository();
                 $aliasedField = $repository->aliasField($repository->getSoftDeleteField());
 

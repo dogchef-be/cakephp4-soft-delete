@@ -98,7 +98,7 @@ trait SoftDeleteTrait
             ['_primary' => false] + $options->getArrayCopy()
         );
 
-        $query = $this->selectQuery();
+        $query = $this->updateQuery();
         $conditions = (array)$entity->extract($primaryKey);
         $statement = $query->update()
             ->set([$this->getSoftDeleteField() => date('Y-m-d H:i:s')])
@@ -148,8 +148,7 @@ trait SoftDeleteTrait
         $primaryKey = (array)$this->getPrimaryKey();
         $query = $this->deleteQuery();
         $conditions = (array)$entity->extract($primaryKey);
-        $statement = $query->delete()
-            ->where($conditions)
+        $statement = $query->where($conditions)
             ->execute();
 
         $success = $statement->rowCount() > 0;
@@ -168,7 +167,6 @@ trait SoftDeleteTrait
     public function hardDeleteAll(\Datetime $until): int
     {
         $query = $this->deleteQuery()
-            ->delete()
             ->where([
                 $this->getSoftDeleteField() . ' IS NOT NULL',
                 $this->getSoftDeleteField() . ' <=' => $until->format('Y-m-d H:i:s')

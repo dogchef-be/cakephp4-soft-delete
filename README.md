@@ -2,7 +2,7 @@
   cakephp4-soft-delete
 </h1>
 <p align="center">
-  Introduces soft-delete models in CakePHP 4<br />
+  Introduces soft-delete models in CakePHP 4.5<br />
 </p>
 
 <p align="center">
