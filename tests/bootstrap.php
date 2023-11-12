@@ -74,6 +74,7 @@ Cache::setConfig([
 if (!getenv('db_class')) {
     putenv('db_class=Cake\Database\Driver\Sqlite');
     putenv('db_dsn=sqlite::memory:');
+    putenv('db_database=test.db');
 }
 
 ConnectionManager::setConfig('test', [
